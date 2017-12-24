@@ -42,10 +42,10 @@ export default class Dashboard extends Component {
   renderCashWithdrawalForm() {
     return (
       <Form
-        onSubmit={model => this.handleWithdrawalFormSubit(model)}
-        label="Снять наличные"
-        submitText="Снять"
-        model="cashWithdrawal"
+        onSubmit={ model => this.handleWithdrawalFormSubit(model) }
+        label='Снять наличные'
+        submitText='Снять'
+        model='cashWithdrawal'
       />
     );
   }
@@ -53,10 +53,10 @@ export default class Dashboard extends Component {
   renderCashTransferForm() {
     return (
       <Form
-        onSubmit={model => this.handleCashTransferFormSubit(model)}
-        label="Перевести на сберегательный счет"
-        submitText="Перевести"
-        model="cashTransfer"
+        onSubmit={ model => this.handleCashTransferFormSubit(model) }
+        label='Перевести на сберегательный счет'
+        submitText='Перевести'
+        model='cashTransfer'
       />
     );
   }
@@ -71,7 +71,7 @@ export default class Dashboard extends Component {
         <span>Ваш баланс: </span>
         <span>{balance}</span>
       </div>
-    )
+    );
   }
 
   render() {

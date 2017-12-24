@@ -6,7 +6,7 @@ import {
   TEST_ASYNC_ACTION_ERROR,
   TEST_ASYNC_ACTION_SUCCESS,
 } from 'actions/app';
-import {LOGIN_ACTION_SUCCESS} from "../actions/app";
+import { LOGIN_ACTION_SUCCESS } from '../actions/app';
 
 const initialState = Map({
   counter: 0,
