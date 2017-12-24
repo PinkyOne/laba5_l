@@ -6,6 +6,7 @@ import {
   TEST_ASYNC_ACTION_ERROR,
   TEST_ASYNC_ACTION_SUCCESS,
 } from 'actions/app';
+import {LOGIN_ACTION_SUCCESS} from "../actions/app";
 
 const initialState = Map({
   counter: 0,
@@ -41,6 +42,12 @@ const actionsMap = {
     return state.merge(Map({
       asyncLoading: false,
       asyncData: action.data,
+    }));
+  },
+  [LOGIN_ACTION_SUCCESS]: (state, action) => {
+    return state.merge(Map({
+      asyncLoading: false,
+      login_response: action.data,
     }));
   },
 };

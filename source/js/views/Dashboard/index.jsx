@@ -73,6 +73,7 @@ export default class Dashboard extends Component {
         <div className='Example'>
           { asyncData &&
             <p>
+              {asyncData.error} <br />
               Date: { asyncData.date }<br />
               Time: { asyncData.time }<br />
               Miliseconds since epoch: { asyncData.milliseconds_since_epoch }

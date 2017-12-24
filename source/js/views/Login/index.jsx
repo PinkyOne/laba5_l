@@ -1,23 +1,38 @@
 import React from 'react';
 import { Control, Form, actions } from 'react-redux-form';
+import { login } from 'actions/app';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+
+const mapStateToProps = state => {
+  const resp = state.app.get('login_response');
+  return {
+    success: resp && resp.token,
+    error: resp && resp.error,
+  };
+};
 
 class Login extends React.Component {
   handleSubmit(user) {
-    // Do whatever you like in here.
-    // If you connect the UserForm to the Redux store,
-    // you can dispatch actions such as:
-    // dispatch(actions.submit('user', somePromise));
-    // etc.
+    const { dispatch } = this.props;
+
+    dispatch(login(user));
   }
+
   render() {
+    if (this.props.success) {
+      return (
+        <Redirect to='/' />
+      );
+    }
     return (
       <Form
         model='user'
         onSubmit={ (user) => this.handleSubmit(user) }
-        style={{
+        style={ {
           display: 'flex',
           flexDirection: 'column',
-        }}
+        } }
       >
         <label htmlFor='user.accountName'>Имя пользователя:</label>
         <Control.text model='user.accountName' id='user.accountName' />
@@ -31,9 +46,10 @@ class Login extends React.Component {
         <button type='submit'>
           Войти!
         </button>
+        <div>{this.props.error}</div>
       </Form>
     );
   }
 }
 
-export default Login;
+export default connect(mapStateToProps)(Login);
