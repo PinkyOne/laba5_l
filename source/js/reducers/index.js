@@ -9,9 +9,15 @@ const initialUserState = {
   pin: '',
 };
 
+const initialCashWithdrawalState = 0;
+
+const initialCashTransferState = 0;
+
 export default combineReducers({
   app,
   ...createForms({
     user: initialUserState,
+    cashWithdrawal: initialCashWithdrawalState,
+    cashTransfer: initialCashTransferState,
   }),
 });

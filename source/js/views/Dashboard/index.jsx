@@ -6,6 +6,7 @@ import CircleSvg from '../../../assets/svg/circle.svg';
 import SquareSvg from '../../../assets/svg/square.svg';
 import TriangleSvg from '../../../assets/svg/triangle.svg';
 import bookImg from '../../../assets/img/book2.jpg';
+import Form from './components/Form';
 
 @connect(state => ({
   asyncData: state.app.get('asyncData'),
@@ -13,6 +14,7 @@ import bookImg from '../../../assets/img/book2.jpg';
   asyncLoading: state.app.get('asyncLoading'),
   counter: state.app.get('counter'),
 }))
+
 export default class Dashboard extends Component {
   static propTypes = {
     asyncData: PropTypes.object,
@@ -25,21 +27,51 @@ export default class Dashboard extends Component {
 
   constructor() {
     super();
-
-    this.handleAsyncButtonClick = this.handleAsyncButtonClick.bind(this);
-    this.handleTestButtonClick = this.handleTestButtonClick.bind(this);
   }
 
-  handleAsyncButtonClick() {
-    const { dispatch } = this.props;
-
-    dispatch(testAsync());
+  handleWithdrawalFormSubit(model) {
+    // side effect
+    console.log('Submit!');
   }
 
-  handleTestButtonClick() {
-    const { dispatch } = this.props;
+  handleCashTransferFormSubit(model) {
+    // side effect
+    console.log('Submit!');
+  }
 
-    dispatch(testAction());
+  renderCashWithdrawalForm() {
+    return (
+      <Form
+        onSubmit={model => this.handleWithdrawalFormSubit(model)}
+        label="Снять наличные"
+        submitText="Снять"
+        model="cashWithdrawal"
+      />
+    );
+  }
+
+  renderCashTransferForm() {
+    return (
+      <Form
+        onSubmit={model => this.handleCashTransferFormSubit(model)}
+        label="Перевести на сберегательный счет"
+        submitText="Перевести"
+        model="cashTransfer"
+      />
+    );
+  }
+
+  renderBalance() {
+    // или где он будет храниться
+    // const balance = this.getBalance()
+    const { balance = 0 } = this.props;
+    return (
+      <div>
+        <hr />
+        <span>Ваш баланс: </span>
+        <span>{balance}</span>
+      </div>
+    )
   }
 
   render() {
@@ -51,60 +83,12 @@ export default class Dashboard extends Component {
     } = this.props;
 
     return (
-      <div className='Dashboard'>
-        <h1>Marvin</h1>
-        <p>
-          Boilerplate for kicking off React/Redux applications.
-        </p>
-
-        <hr />
-
-        <h2>Examples</h2>
-
-        <h3>Synchronous action</h3>
-        <div className='Example'>
-          <p>Counter: { counter }</p>
-          <button onClick={ this.handleTestButtonClick }>
-            Increase
-          </button>
-        </div>
-
-        <h3>Async action example</h3>
-        <div className='Example'>
-          { asyncData &&
-            <p>
-              {asyncData.error} <br />
-              Date: { asyncData.date }<br />
-              Time: { asyncData.time }<br />
-              Miliseconds since epoch: { asyncData.milliseconds_since_epoch }
-            </p> }
-          { asyncLoading && <p>Loading...</p> }
-          { asyncError && <p>Error: { asyncError }</p> }
-          <button
-            disabled={ asyncLoading }
-            onClick={ this.handleAsyncButtonClick }
-          >
-            Get async data
-          </button>
-        </div>
-
-        <h3>Background image</h3>
-        <div className='Example'>
-          <div className='BackgroundImgExample' />
-        </div>
-
-        <h3>Image imported to the component</h3>
-        <div className='Example'>
-          <img src={ bookImg } alt='' className='ImgExample' />
-        </div>
-
-        <h3>SVGs imported as react components</h3>
-        <div className='Example'>
-          <CircleSvg style={ { marginRight: 10 } } />
-          <SquareSvg style={ { marginRight: 10 } } />
-          <TriangleSvg />
-        </div>
-      </div>
+      <section>
+        <h1>Терминал</h1>
+        {this.renderCashWithdrawalForm()}
+        {this.renderCashTransferForm()}
+        {this.renderBalance()}
+      </section>
     );
   }
 }
