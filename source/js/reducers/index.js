@@ -8,16 +8,19 @@ const initialUserState = {
   accountNumber: '',
   pin: '',
 };
-
-const initialCashWithdrawalState = 0;
-
-const initialCashTransferState = 0;
+const initialCashTransferState = {
+  amount: '',
+};
+const initialCashWithdrawalState = {
+  amount: '',
+};
 
 export default combineReducers({
   app,
   ...createForms({
     user: initialUserState,
-    cashWithdrawal: initialCashWithdrawalState,
     cashTransfer: initialCashTransferState,
+    cashWithdrawalCheck: initialCashWithdrawalState,
+    cashWithdrawalSave: initialCashWithdrawalState,
   }),
 });

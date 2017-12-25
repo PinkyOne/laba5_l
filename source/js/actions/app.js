@@ -1,11 +1,19 @@
-import api, { login as apiLogin } from 'api';
+import {
+  login as apiLogin,
+  apiSendCashTransfer,
+  apiGetBalance,
+  apiSendWithdrawal,
+} from 'api';
 
 export const TEST_ACTION = 'TEST_ACTION';
+export const SAVE_ACCOUNT_NUMBER = 'SAVE_ACCOUNT_NUMBER';
 
-export const TEST_ASYNC_ACTION_START = 'TEST_ASYNC_ACTION_START';
-export const TEST_ASYNC_ACTION_ERROR = 'TEST_ASYNC_ACTION_ERROR';
-export const TEST_ASYNC_ACTION_SUCCESS = 'TEST_ASYNC_ACTION_SUCCESS';
+export const ASYNC_ACTION_START = 'ASYNC_ACTION_START';
+export const ASYNC_ACTION_ERROR = 'ASYNC_ACTION_ERROR';
 export const LOGIN_ACTION_SUCCESS = 'LOGIN_ACTION_SUCCESS';
+export const CASH_TRANSFER_ACTION_SUCCESS = 'CASH_TRANSFER_ACTION_SUCCESS';
+export const WITHDRAWAL_ACTION_SUCCESS = 'WITHDRAWAL_ACTION_SUCCESS';
+export const GET_BALANCE_ACTION_SUCCESS = 'GET_BALANCE_ACTION_SUCCESS';
 
 // Test action
 
@@ -17,47 +25,95 @@ export function testAction() {
 
 // Async action example
 
-function testAsyncStart() {
+function asyncStart() {
   return {
-    type: TEST_ASYNC_ACTION_START,
+    type: ASYNC_ACTION_START,
   };
 }
 
-function testAsyncSuccess(data) {
-  return {
-    type: TEST_ASYNC_ACTION_SUCCESS,
-    data,
-  };
-}
 function loginSuccess(data) {
   return {
     type: LOGIN_ACTION_SUCCESS,
     data,
   };
 }
-function testAsyncError(error) {
+
+function saveAccountNumber(data) {
   return {
-    type: TEST_ASYNC_ACTION_ERROR,
+    type: SAVE_ACCOUNT_NUMBER,
+    data,
+  };
+}
+
+function getBalanceSuccess(data) {
+  return {
+    type: GET_BALANCE_ACTION_SUCCESS,
+    data,
+  };
+}
+
+function sendWithdrawalSuccess(data) {
+  return {
+    type: WITHDRAWAL_ACTION_SUCCESS,
+    data,
+  };
+}
+function sendCashTransferSuccess(data) {
+  return {
+    type: CASH_TRANSFER_ACTION_SUCCESS,
+    data,
+  };
+}
+
+function asyncError(error) {
+  return {
+    type: ASYNC_ACTION_ERROR,
     error,
   };
 }
+
 export function login(data) {
   return function (dispatch) {
-    dispatch(testAsyncStart());
+    dispatch(asyncStart());
 
     apiLogin(data)
-      .then(resp => dispatch(loginSuccess(resp)))
-      .catch(error => dispatch(testAsyncError(error)));
+      .then(resp => {
+        dispatch(saveAccountNumber(data));
+        dispatch(loginSuccess(resp));
+      })
+      .catch(error => dispatch(asyncError(error)));
   };
 }
-export function testAsync() {
+
+export function getBalance(data) {
   return function (dispatch) {
-    dispatch(testAsyncStart());
+    dispatch(asyncStart());
 
-    api.testAsync()
-      .then(data => dispatch(testAsyncSuccess(data)))
-      .catch(error => dispatch(testAsyncError(error)));
+    apiGetBalance(data)
+      .then(resp => dispatch(getBalanceSuccess(resp)))
+      .catch(error => dispatch(asyncError(error)));
   };
 }
 
-// Update
+export function sendCashTransfer(data) {
+  return function (dispatch) {
+    dispatch(asyncStart());
+
+    apiSendCashTransfer(data)
+      .then(resp => dispatch(sendCashTransferSuccess(resp))
+        .then(dispatch(getBalance(data)))
+      ).catch(error => dispatch(asyncError(error)));
+  };
+}
+
+
+export function sendWithdrawal(data) {
+  return function (dispatch) {
+    dispatch(asyncStart());
+
+    apiSendWithdrawal(data)
+      .then(resp => dispatch(sendWithdrawalSuccess(resp))
+        .then(dispatch(getBalance(data))))
+      .catch(error => dispatch(asyncError(error)));
+  };
+}

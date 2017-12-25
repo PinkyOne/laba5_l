@@ -3,11 +3,15 @@ import { Control, Form, actions } from 'react-redux-form';
 import { login } from 'actions/app';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { getBalance } from '../../actions/app';
 
 const mapStateToProps = state => {
   const resp = state.app.get('login_response');
+  const accountNumber = state.app.get('accountNumber');
   return {
     success: resp && resp.token,
+    token: resp && resp.token,
+    accountNumber: accountNumber,
     error: resp && resp.error,
   };
 };
@@ -21,6 +25,9 @@ class Login extends React.Component {
 
   render() {
     if (this.props.success) {
+      const { token, accountNumber } = this.props;
+      const data = token && accountNumber && { token, accountNumber };
+      this.props.dispatch(getBalance(data));
       return (
         <Redirect to='/' />
       );

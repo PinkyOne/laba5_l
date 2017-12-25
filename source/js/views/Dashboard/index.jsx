@@ -7,20 +7,33 @@ import SquareSvg from '../../../assets/svg/square.svg';
 import TriangleSvg from '../../../assets/svg/triangle.svg';
 import bookImg from '../../../assets/img/book2.jpg';
 import Form from './components/Form';
+import { getBalance, sendWithdrawal, sendCashTransfer } from 'actions/app';
 
-@connect(state => ({
-  asyncData: state.app.get('asyncData'),
-  asyncError: state.app.get('asyncError'),
-  asyncLoading: state.app.get('asyncLoading'),
-  counter: state.app.get('counter'),
-}))
+const mapStateToProps = state => {
+  const resp = state.app.get('login_response');
+  const accountNumber = state.app.get('accountNumber');
+  const balanceCheck = state.app.get('balanceCheck');
+  const balanceSaving = state.app.get('balanceSaving');
+  const balanceError = state.app.get('balanceError');
+  const withdrawal = state.app.get('withdrawal');
+  const cashTransfer = state.app.get('cashTransfer');
+  return {
+    balanceCheck,
+    balanceSaving,
+    balanceError,
+    token: resp && resp.token,
+    accountNumber,
+    withdrawalSuccess: withdrawal && withdrawal.data,
+    withdrawalError: withdrawal && withdrawal.error,
+    cashTransferSuccess: cashTransfer && cashTransfer.data,
+    cashTransferError: cashTransfer && cashTransfer.error,
+  };
+};
+
+@connect(mapStateToProps)
 
 export default class Dashboard extends Component {
   static propTypes = {
-    asyncData: PropTypes.object,
-    asyncError: PropTypes.string,
-    asyncLoading: PropTypes.bool,
-    counter: PropTypes.number,
     // from react-redux connect
     dispatch: PropTypes.func,
   }
@@ -29,23 +42,25 @@ export default class Dashboard extends Component {
     super();
   }
 
-  handleWithdrawalFormSubit(model) {
-    // side effect
-    console.log('Submit!');
+  handleWithdrawalFormSubmit(model, typeBill) {
+    const { dispatch, token, accountNumber } = this.props;
+
+    dispatch(sendWithdrawal({ token, accountNumber, typeBill, ...model }));
   }
 
-  handleCashTransferFormSubit(model) {
-    // side effect
-    console.log('Submit!');
+  handleCashTransferFormSubmit(model) {
+    const { dispatch, token, accountNumber } = this.props;
+
+    dispatch(sendCashTransfer({ token, accountNumber, ...model }));
   }
 
-  renderCashWithdrawalForm() {
+  renderCashWithdrawalForm(typeBill) {
     return (
       <Form
-        onSubmit={ model => this.handleWithdrawalFormSubit(model) }
-        label='Снять наличные'
+        onSubmit={ model => this.handleWithdrawalFormSubmit(model, typeBill) }
+        label={ `Снять наличные с ${ !typeBill ? 'чекового' : 'сберегательного' } счета` }
         submitText='Снять'
-        model='cashWithdrawal'
+        model={ `cashWithdrawal${ typeBill ? 'Check' : 'Save' }` }
       />
     );
   }
@@ -53,7 +68,7 @@ export default class Dashboard extends Component {
   renderCashTransferForm() {
     return (
       <Form
-        onSubmit={ model => this.handleCashTransferFormSubit(model) }
+        onSubmit={ model => this.handleCashTransferFormSubmit(model) }
         label='Перевести на сберегательный счет'
         submitText='Перевести'
         model='cashTransfer'
@@ -64,28 +79,30 @@ export default class Dashboard extends Component {
   renderBalance() {
     // или где он будет храниться
     // const balance = this.getBalance()
-    const { balance = 0 } = this.props;
+    const { balanceCheck = 0, balanceSaving = 0 } = this.props;
     return (
       <div>
         <hr />
-        <span>Ваш баланс: </span>
-        <span>{balance}</span>
+        <span>Ваш чековый баланс: </span>
+        <span>{balanceCheck}</span><br />
+        <span>Ваш сберегательный баланс: </span>
+        <span>{balanceSaving}</span>
       </div>
     );
   }
 
   render() {
     const {
-      asyncData,
-      asyncError,
-      asyncLoading,
-      counter,
+      withdrawalError,
+      cashTransferError,
     } = this.props;
-
+    if (withdrawalError) alert(withdrawalError);
+    if (cashTransferError) alert(cashTransferError);
     return (
       <section>
         <h1>Терминал</h1>
-        {this.renderCashWithdrawalForm()}
+        {this.renderCashWithdrawalForm(0)}
+        {this.renderCashWithdrawalForm(1)}
         {this.renderCashTransferForm()}
         {this.renderBalance()}
       </section>

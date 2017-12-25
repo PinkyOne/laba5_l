@@ -2,11 +2,14 @@ import { Map } from 'immutable';
 
 import {
   TEST_ACTION,
-  TEST_ASYNC_ACTION_START,
-  TEST_ASYNC_ACTION_ERROR,
-  TEST_ASYNC_ACTION_SUCCESS,
+  ASYNC_ACTION_START,
+  ASYNC_ACTION_ERROR,
+  LOGIN_ACTION_SUCCESS,
+  CASH_TRANSFER_ACTION_SUCCESS,
+  WITHDRAWAL_ACTION_SUCCESS,
+  GET_BALANCE_ACTION_SUCCESS,
+  SAVE_ACCOUNT_NUMBER,
 } from 'actions/app';
-import { LOGIN_ACTION_SUCCESS } from '../actions/app';
 
 const initialState = Map({
   counter: 0,
@@ -24,30 +27,61 @@ const actionsMap = {
     }));
   },
 
+  [SAVE_ACCOUNT_NUMBER]: (state, action) => {
+    const { accountNumber } = action.data;
+
+    return state.merge(Map({
+      accountNumber,
+    }));
+  },
+
   // Async action
-  [TEST_ASYNC_ACTION_START]: (state) => {
+  [ASYNC_ACTION_START]: (state) => {
     return state.merge(Map({
       asyncLoading: true,
       asyncError: null,
       asyncData: null,
     }));
   },
-  [TEST_ASYNC_ACTION_ERROR]: (state, action) => {
+
+  [ASYNC_ACTION_ERROR]: (state, action) => {
     return state.merge(Map({
       asyncLoading: false,
       asyncError: action.error.message,
     }));
   },
-  [TEST_ASYNC_ACTION_SUCCESS]: (state, action) => {
-    return state.merge(Map({
-      asyncLoading: false,
-      asyncData: action.data,
-    }));
-  },
+
   [LOGIN_ACTION_SUCCESS]: (state, action) => {
     return state.merge(Map({
       asyncLoading: false,
       login_response: action.data,
+    }));
+  },
+
+  [CASH_TRANSFER_ACTION_SUCCESS]: (state, action) => {
+    return state.merge(Map({
+      asyncLoading: false,
+      cashTransfer: action.data,
+    }));
+  },
+
+  [WITHDRAWAL_ACTION_SUCCESS]: (state, action) => {
+    return state.merge(Map({
+      asyncLoading: false,
+      withdrawal: action.data,
+    }));
+  },
+
+  [GET_BALANCE_ACTION_SUCCESS]: (state, action) => {
+    if (!action.data.error) {
+      return state.merge(Map({
+        asyncLoading: false,
+        ...action.data,
+      }));
+    }
+    return state.merge(Map({
+      asyncLoading: false,
+      balanceError: action.data.error,
     }));
   },
 };
