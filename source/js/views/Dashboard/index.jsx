@@ -17,6 +17,7 @@ const mapStateToProps = state => {
   const balanceError = state.app.get('balanceError');
   const withdrawal = state.app.get('withdrawal');
   const cashTransfer = state.app.get('cashTransfer');
+
   return {
     balanceCheck,
     balanceSaving,
@@ -54,39 +55,56 @@ export default class Dashboard extends Component {
     dispatch(sendCashTransfer({ token, accountNumber, ...model }));
   }
 
-  renderCashWithdrawalForm(typeBill) {
+  renderCashWithdrawalForm(typeBill, withdrawalError) {
     return (
-      <Form
-        onSubmit={ model => this.handleWithdrawalFormSubmit(model, typeBill) }
-        label={ `Снять наличные с ${ !typeBill ? 'чекового' : 'сберегательного' } счета` }
-        submitText='Снять'
-        model={ `cashWithdrawal${ typeBill ? 'Check' : 'Save' }` }
-      />
+      <div
+        style={ {
+          display: 'flex',
+          flexDirection: 'column',
+        } }
+      >
+        <Form
+          onSubmit={ model => this.handleWithdrawalFormSubmit(model, typeBill) }
+          label={ `Снять наличные с ${ !typeBill ? 'чекового' : 'сберегательного' } счета` }
+          submitText='Снять'
+          model={ `cashWithdrawal${ typeBill ? 'Check' : 'Save' }` }
+          disabled={ !!withdrawalError }
+        />
+        <div>{withdrawalError}</div>
+      </div>
     );
   }
 
-  renderCashTransferForm() {
+  renderCashTransferForm(cashTransferError) {
     return (
-      <Form
-        onSubmit={ model => this.handleCashTransferFormSubmit(model) }
-        label='Перевести на сберегательный счет'
-        submitText='Перевести'
-        model='cashTransfer'
-      />
+      <div
+        style={ {
+          display: 'flex',
+          flexDirection: 'column',
+        } }
+      >
+        <Form
+          onSubmit={ model => this.handleCashTransferFormSubmit(model) }
+          label='Перевести на сберегательный счет'
+          submitText='Перевести'
+          model='cashTransfer'
+        />
+        <div>{cashTransferError}</div>
+      </div>
     );
   }
 
   renderBalance() {
     // или где он будет храниться
     // const balance = this.getBalance()
-    const { balanceCheck = 0, balanceSaving = 0 } = this.props;
+    const { balanceCheck = 0, balanceSaving } = this.props;
     return (
       <div>
         <hr />
         <span>Ваш чековый баланс: </span>
         <span>{balanceCheck}</span><br />
-        <span>Ваш сберегательный баланс: </span>
-        <span>{balanceSaving}</span>
+        {balanceSaving && <span>Ваш сберегательный баланс: </span>}
+        {balanceSaving && <span>{balanceSaving}</span>}
       </div>
     );
   }
@@ -95,15 +113,16 @@ export default class Dashboard extends Component {
     const {
       withdrawalError,
       cashTransferError,
+      balanceCheck = 0,
+      balanceSaving ,
     } = this.props;
-    if (withdrawalError) alert(withdrawalError);
-    if (cashTransferError) alert(cashTransferError);
+
     return (
       <section>
         <h1>Терминал</h1>
-        {this.renderCashWithdrawalForm(0)}
-        {this.renderCashWithdrawalForm(1)}
-        {this.renderCashTransferForm()}
+        {balanceCheck && this.renderCashWithdrawalForm(0, withdrawalError)}
+        {balanceSaving && this.renderCashWithdrawalForm(1, withdrawalError)}
+        {balanceSaving && this.renderCashTransferForm(cashTransferError)}
         {this.renderBalance()}
       </section>
     );

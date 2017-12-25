@@ -10,8 +10,7 @@ export function login(credentials) {
     headers: {
       'Content-Type': 'application/json',
     },
-  })
-    .then(response => response.json());
+  }).then(response => response.json());
 }
 
 export function apiSendCashTransfer(data) {

@@ -30,6 +30,7 @@ export default class Form extends Component {
       label = '',
       submitText = 'Подтвердить',
       model,
+      disabled,
     } = this.props;
 
     return (
@@ -51,7 +52,7 @@ export default class Form extends Component {
           placeholder='Cумма'
           style={ this.commonStyles }
         />
-        <button style={ this.buttonStyles } type='submit'>
+        <button style={ this.buttonStyles } type='submit' disabled={ disabled }>
           {submitText}
         </button>
       </ReduxForm>
